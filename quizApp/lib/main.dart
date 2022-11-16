@@ -74,7 +74,9 @@ class _MyAppState extends State<MyApp> {
       _questionIndex = _questionIndex + 1;
     });
     if (_questionIndex < _questions.length) {
-      print('objection of questions');
+      print('You have more questions to answer.');
+    } else {
+      print('No Qestion Remains');
     }
   }
 
@@ -83,7 +85,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('My First App'),
+          title: Text('Quiz App'),
         ),
         body: _questionIndex < _questions.length
             ? quiz(
