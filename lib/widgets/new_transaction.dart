@@ -54,70 +54,79 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'enter title',
-                labelText: 'Title',
+    return SingleChildScrollView(
+      //keyboard scroll er jonne
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom +
+                  10), //viewinsect information dey softkeyboard er
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'enter title',
+                  labelText: 'Title',
+                ),
+                controller: _titlecontroller,
+                onSubmitted: (_) => submitData(),
               ),
-              controller: _titlecontroller,
-              onSubmitted: (_) => submitData(),
-            ),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'enter Amount',
-                labelText: 'Amount',
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'enter Amount',
+                  labelText: 'Amount',
+                ),
+                controller: _amountController,
+                keyboardType: TextInputType.numberWithOptions(
+                    decimal: true), // for android just add number
+                onSubmitted: (_) => submitData(),
               ),
-              controller: _amountController,
-              keyboardType: TextInputType.numberWithOptions(
-                  decimal: true), // for android just add number
-              onSubmitted: (_) => submitData(),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Container(
-                    child: Text(_selectedDate == null
-                        ? "Date is not chosen!!!"
-                        : (DateFormat.yMd().format(_selectedDate))),
-                    padding: EdgeInsets.all(10),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextButton(
-                        onPressed: _presentDatePicker,
-                        child: Text(
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            'Choose a date')),
-                  )
-                ],
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Container(
+                      child: Text(_selectedDate == null
+                          ? "Date is not chosen!!!"
+                          : (DateFormat.yMd().format(_selectedDate))),
+                      padding: EdgeInsets.all(10),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextButton(
+                          onPressed: _presentDatePicker,
+                          child: Text(
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Choose a date')),
+                    )
+                  ],
+                ),
               ),
-            ),
-            TextButton(
-              child: Text(
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  'Add transaction'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 0, 0, 0)),
-                foregroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 255, 255, 255)),
-                overlayColor: MaterialStateProperty.all(Colors.red),
+              TextButton(
+                child: Text(
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'Add transaction'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Color.fromARGB(255, 0, 0, 0)),
+                  foregroundColor: MaterialStateProperty.all<Color>(
+                      Color.fromARGB(255, 255, 255, 255)),
+                  overlayColor: MaterialStateProperty.all(Colors.red),
+                ),
+                onPressed: submitData,
               ),
-              onPressed: submitData,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

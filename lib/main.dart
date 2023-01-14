@@ -34,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [];
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
@@ -82,48 +83,85 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Expense Planner',
-            style: TextStyle(fontFamily: 'OpenSans'),
-          ),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () {
-                  _startAddNewTransaction(context);
-                },
-                icon: Icon(Icons.add))
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-              // mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Card(
-                  child: Container(
-                    width: double.infinity,
-                    child: Text(
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Color.fromARGB(255, 73, 21, 135)),
-                      'Chart',
-                      textAlign: TextAlign.center,
+    final media = MediaQuery.of(context);
+    final _isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final appbars = AppBar(
+      title: Text(
+        'Expense Planner',
+        style: TextStyle(fontFamily: 'OpenSans'),
+      ),
+      actions: <Widget>[
+        IconButton(
+            onPressed: () {
+              _startAddNewTransaction(context);
+            },
+            icon: Icon(Icons.add))
+      ],
+    );
+    final txwidgetList = Container(
+        height: (media.size.height -
+                appbars.preferredSize.height -
+                media.padding.top) *
+            .70,
+        child: TransactionList(_userTransactions, _deleteTransaction));
+    return Scaffold(
+      appBar: appbars,
+      body: SingleChildScrollView(
+        child: Column(
+            // mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              // Card(
+              //   child: Container(
+              //     width: double.infinity,
+              //     child: Text(
+              //       style: TextStyle(
+              //           fontSize: 20, color: Color.fromARGB(255, 73, 21, 135)),
+              //       'Chart',
+              //       textAlign: TextAlign.center,
+              //     ),
+              //   ),
+              //   // elevation: 60,
+              // ),
+              if (_isLandscape)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text("Show Chart"),
+                    Switch(
+                      value: _showChart,
+                      onChanged: (val) {
+                        setState(() {
+                          _showChart = val;
+                        });
+                      },
                     ),
-                  ),
-                  // elevation: 60,
+                  ],
                 ),
-                Chart(_recentTransactions),
-                TransactionList(_userTransactions, _deleteTransaction),
-              ]),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: (() => _startAddNewTransaction(context)),
-        ),
+              if (!_isLandscape)
+                Container(
+                    height: (media.size.height -
+                            appbars.preferredSize.height -
+                            media.padding.top) *
+                        0.3,
+                    child: Chart(_recentTransactions)),
+              if (!_isLandscape) txwidgetList,
+              if (_isLandscape)
+                _showChart // aida bool value false default deya ase, jodiclick kori then true hobe taile chart ta show korbe otherwie list show korbe tai toh!
+                    ? Container(
+                        height: (media.size.height -
+                                appbars.preferredSize.height -
+                                media.padding.top) *
+                            0.7,
+                        child: Chart(_recentTransactions))
+                    : txwidgetList,
+            ]),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: (() => _startAddNewTransaction(context)),
       ),
     );
   }
