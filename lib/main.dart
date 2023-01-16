@@ -1,8 +1,12 @@
+import 'dart:io';
+import 'package:intl/intl.dart';
+import 'dart:core';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:expenseplanner/models/transaction.dart';
 import 'package:expenseplanner/widgets/new_transaction.dart';
 import 'package:expenseplanner/widgets/transaction_list.dart';
-import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
+
 import 'package:expenseplanner/widgets/chart.dart';
 
 void main() => runApp(MyApp());
@@ -86,28 +90,45 @@ class _MyHomePageState extends State<MyHomePage> {
     final media = MediaQuery.of(context);
     final _isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final appbars = AppBar(
-      title: Text(
-        'Expense Planner',
-        style: TextStyle(fontFamily: 'OpenSans'),
-      ),
-      actions: <Widget>[
-        IconButton(
-            onPressed: () {
-              _startAddNewTransaction(context);
-            },
-            icon: Icon(Icons.add))
-      ],
-    );
+    final PreferredSizeWidget appBar = (Platform.isIOS
+        ? CupertinoSliverNavigationBar(
+            middle: Text(
+              'Expense Planner',
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: Icon(CupertinoIcons.add),
+                  onTap: () {
+                    _startAddNewTransaction(context);
+                  },
+                ),
+              ],
+            ),
+          )
+        : AppBar(
+            title: Text(
+              'Expense Planner',
+            ),
+            actions: <Widget>[
+              IconButton(
+                onPressed: () {
+                  _startAddNewTransaction(context);
+                },
+                icon: Icon(Icons.add),
+              ),
+            ],
+          )) ;
+
     final txwidgetList = Container(
         height: (media.size.height -
-                appbars.preferredSize.height -
+                appBar.preferredSize.height -
                 media.padding.top) *
             .70,
         child: TransactionList(_userTransactions, _deleteTransaction));
-    return Scaffold(
-      appBar: appbars,
-      body: SingleChildScrollView(
+    final bodyVar = SafeArea(
+      child: SingleChildScrollView(
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -128,8 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text("Show Chart"),
-                    Switch(
+                    Text(
+                      "Show Chart",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Switch.adaptive(
                       value: _showChart,
                       onChanged: (val) {
                         setState(() {
@@ -142,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
               if (!_isLandscape)
                 Container(
                     height: (media.size.height -
-                            appbars.preferredSize.height -
+                            appBar.preferredSize.height -
                             media.padding.top) *
                         0.3,
                     child: Chart(_recentTransactions)),
@@ -151,18 +175,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 _showChart // aida bool value false default deya ase, jodiclick kori then true hobe taile chart ta show korbe otherwie list show korbe tai toh!
                     ? Container(
                         height: (media.size.height -
-                                appbars.preferredSize.height -
+                                appBar.preferredSize.height -
                                 media.padding.top) *
                             0.7,
                         child: Chart(_recentTransactions))
                     : txwidgetList,
             ]),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: (() => _startAddNewTransaction(context)),
-      ),
     );
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            child: bodyVar,
+          )
+        : Scaffold(
+            //scaffold material app er jonne
+            appBar: appBar,
+            body: bodyVar,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: (() => _startAddNewTransaction(context)),
+                  ),
+          );
   }
 }
